@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PostJobRequest extends FormRequest
+class ItemRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,6 +14,8 @@ class PostJobRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
         ];
     }
 }
