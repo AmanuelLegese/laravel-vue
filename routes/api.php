@@ -4,20 +4,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::group(function () {
 
-Route::apiResource('/run_jobs', App\Http\Controllers\API\RunJobController::class);
+    Route::post('register', AuthController::class . '@register');
 
-Route::apiResource('/post_jobs', App\Http\Controllers\API\PostJobController::class);
+    Route::post('login', AuthController::class . '@login');
 
-Route::apiResource('/post', App\Http\Controllers\API\PostController::class);
 
-Route::post('register', function (Request $request) {
-    return (new AuthController())->register($request);
-});
+    /**
+     * protected routes
+     */
+    Route::middleware('auth:api')->group(function () {
+        Route::apiResource('/items', App\Http\Controllers\API\ItemController::class);
+    });
 
-Route::post('login', function (Request $request) {
-    return (new AuthController())->login($request);
 });
