@@ -1,10 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
-
-Route::group(function () {
 
     Route::post('register', AuthController::class . '@register');
 
@@ -17,5 +14,3 @@ Route::group(function () {
     Route::middleware('auth:api')->group(function () {
         Route::apiResource('/items', App\Http\Controllers\API\ItemController::class);
     });
-
-});
