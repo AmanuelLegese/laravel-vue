@@ -3,50 +3,50 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ItemRequest;
-use App\Http\Resources\ItemResource;
-use App\Models\Item;
+use App\Http\Requests\InventoryRequest;
+use App\Http\Resources\InventoryResource;
+use App\Models\Inventory;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ItemController extends Controller
+class InventoryController extends Controller
 {
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        return ItemResource::collection(Item::latest()->paginate(10));
+        return InventoryResource::collection(Inventory::latest()->paginate(10));
     }
 
-    public function store(ItemRequest $request): ItemResource|\Illuminate\Http\JsonResponse
+    public function store(InventoryRequest $request): InventoryResource|\Illuminate\Http\JsonResponse
     {
         try {
-            $item = Item::create($request->validated());
-            return new ItemResource($item);
+            $inventory = Inventory::create($request->validated());
+            return new InventoryResource($inventory);
         } catch (\Exception $exception) {
             report($exception);
             return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function show(Item $item): ItemResource
+    public function show(Inventory $inventory): InventoryResource
     {
-        return ItemResource::make($item);
+        return InventoryResource::make($inventory);
     }
 
-    public function update(ItemRequest $request, Item $item): ItemResource|\Illuminate\Http\JsonResponse
+    public function update(InventoryRequest $request, Inventory $inventory): InventoryResource|\Illuminate\Http\JsonResponse
     {
         try {
-            $item->update($request->validated());
-            return new ItemResource($item);
+            $inventory->update($request->validated());
+            return new InventoryResource($inventory);
         } catch (\Exception $exception) {
             report($exception);
             return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function destroy(Item $item): \Illuminate\Http\JsonResponse
+    public function destroy(Inventory $inventory): \Illuminate\Http\JsonResponse
     {
         try {
-            $item->delete();
+            $inventory->delete();
             return response()->json(['message' => 'Deleted successfully'], Response::HTTP_OK);
         } catch (\Exception $exception) {
             report($exception);

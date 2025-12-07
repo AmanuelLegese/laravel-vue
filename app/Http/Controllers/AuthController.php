@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\SendWelcomeEmailJob;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -34,7 +35,7 @@ class AuthController extends Controller
             'email'     => $request->email,
             'password'  => Hash::make($request->password),
         ]);
-
+        SendWelcomeEmailJob::dispatch($user);
         // create token
         $token = $user->createToken('AppToken')->accessToken;
         return response()->json([
@@ -70,7 +71,7 @@ class AuthController extends Controller
 
         // create token
         $token = $user->createToken('AppToken')->accessToken;
-
+        SendWelcomeEmailJob::dispatch($user);
         return response()->json([
             'message' => 'Logged in successfully',
             'user' => $user,

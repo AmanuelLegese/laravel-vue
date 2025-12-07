@@ -3,50 +3,50 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ItemRequest;
-use App\Http\Resources\ItemResource;
-use App\Models\Item;
+use App\Http\Requests\ManufacturerRequest;
+use App\Http\Resources\ManufacturerResource;
+use App\Models\Manufacturer;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ItemController extends Controller
+class ManufacturerController extends Controller
 {
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        return ItemResource::collection(Item::latest()->paginate(10));
+        return ManufacturerResource::collection(Manufacturer::latest()->paginate(10));
     }
 
-    public function store(ItemRequest $request): ItemResource|\Illuminate\Http\JsonResponse
+    public function store(ManufacturerRequest $request): ManufacturerResource|\Illuminate\Http\JsonResponse
     {
         try {
-            $item = Item::create($request->validated());
-            return new ItemResource($item);
+            $manufacturer = Manufacturer::create($request->validated());
+            return new ManufacturerResource($manufacturer);
         } catch (\Exception $exception) {
             report($exception);
             return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function show(Item $item): ItemResource
+    public function show(Manufacturer $manufacturer): ManufacturerResource
     {
-        return ItemResource::make($item);
+        return ManufacturerResource::make($manufacturer);
     }
 
-    public function update(ItemRequest $request, Item $item): ItemResource|\Illuminate\Http\JsonResponse
+    public function update(ManufacturerRequest $request, Manufacturer $manufacturer): ManufacturerResource|\Illuminate\Http\JsonResponse
     {
         try {
-            $item->update($request->validated());
-            return new ItemResource($item);
+            $manufacturer->update($request->validated());
+            return new ManufacturerResource($manufacturer);
         } catch (\Exception $exception) {
             report($exception);
             return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function destroy(Item $item): \Illuminate\Http\JsonResponse
+    public function destroy(Manufacturer $manufacturer): \Illuminate\Http\JsonResponse
     {
         try {
-            $item->delete();
+            $manufacturer->delete();
             return response()->json(['message' => 'Deleted successfully'], Response::HTTP_OK);
         } catch (\Exception $exception) {
             report($exception);

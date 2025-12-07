@@ -13,7 +13,8 @@ use App\Http\Controllers\AuthController;
      * protected routes
      */
     Route::middleware('auth:api')->group(function () {
-        Route::apiResource('/items', App\Http\Controllers\API\ItemController::class);
+        
+
         /**
          * Permission Management
          */
@@ -22,6 +23,7 @@ use App\Http\Controllers\AuthController;
         Route::post('/revoke', [App\Http\Controllers\API\ManagePermission::class, 'revokePermission']);
         Route::post('/massgrant', [App\Http\Controllers\API\ManagePermission::class, 'massgrantPermission']);
         Route::post('/massrevoke', [App\Http\Controllers\API\ManagePermission::class, 'massrevokePermission']);
+
         /**
          * Role Management
          */
@@ -32,4 +34,32 @@ use App\Http\Controllers\AuthController;
         Route::post('/revoke-permissions-roles', [App\Http\Controllers\API\ManageRole::class, 'revokePermissionsFromRole']);
         Route::post('/assign-user-role', [App\Http\Controllers\API\ManageRole::class, 'assignUserToRole']);
         Route::post('/revoke-user-role', [App\Http\Controllers\API\ManageRole::class, 'revokeUserFromRole']);
+        
+        /**
+         * items
+         */
+        Route::apiResource('/items', App\Http\Controllers\API\ItemController::class);
+        
+        /**
+         * categories
+         */
+        Route::apiResource('/categories', App\Http\Controllers\API\CategoryController::class);
+
+        /**
+         * manufacturers
+         */
+        Route::apiResource('/manufacturers', App\Http\Controllers\API\ManufacturerController::class);
+
+        /**
+         * inventories
+         */
+        Route::apiResource('/inventories', App\Http\Controllers\API\InventoryController::class);
+
+        /**
+         * transactions
+         */
+        Route::apiResource('/transactions', App\Http\Controllers\API\TransactionController::class);
+
     });
+
+

@@ -3,50 +3,50 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ItemRequest;
-use App\Http\Resources\ItemResource;
-use App\Models\Item;
+use App\Http\Requests\CategoryRequest;
+use App\Http\Resources\CategoryResource;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ItemController extends Controller
+class CategoryController extends Controller
 {
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        return ItemResource::collection(Item::latest()->paginate(10));
+        return CategoryResource::collection(Category::latest()->paginate(10));
     }
 
-    public function store(ItemRequest $request): ItemResource|\Illuminate\Http\JsonResponse
+    public function store(CategoryRequest $request): CategoryResource|\Illuminate\Http\JsonResponse
     {
         try {
-            $item = Item::create($request->validated());
-            return new ItemResource($item);
+            $category = Category::create($request->validated());
+            return new CategoryResource($category);
         } catch (\Exception $exception) {
             report($exception);
             return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function show(Item $item): ItemResource
+    public function show(Category $category): CategoryResource
     {
-        return ItemResource::make($item);
+        return CategoryResource::make($category);
     }
 
-    public function update(ItemRequest $request, Item $item): ItemResource|\Illuminate\Http\JsonResponse
+    public function update(CategoryRequest $request, Category $category): CategoryResource|\Illuminate\Http\JsonResponse
     {
         try {
-            $item->update($request->validated());
-            return new ItemResource($item);
+            $category->update($request->validated());
+            return new CategoryResource($category);
         } catch (\Exception $exception) {
             report($exception);
             return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function destroy(Item $item): \Illuminate\Http\JsonResponse
+    public function destroy(Category $category): \Illuminate\Http\JsonResponse
     {
         try {
-            $item->delete();
+            $category->delete();
             return response()->json(['message' => 'Deleted successfully'], Response::HTTP_OK);
         } catch (\Exception $exception) {
             report($exception);
