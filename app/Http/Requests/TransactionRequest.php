@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ItemRequest extends FormRequest
+class TransactionRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -14,8 +14,9 @@ class ItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'string|max:255|unique:items,name',
-            'description' => 'string',
+            'user_id' => 'integer|required|exists:users,id',
+            'item_id' => 'integer|required|exists:items,id',
+            'quantity' => 'integer|required|min:1',
             'deleted_at' => 'date',
         ];
     }
