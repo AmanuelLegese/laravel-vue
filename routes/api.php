@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\TestEvent;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 
@@ -9,6 +10,11 @@ use App\Http\Controllers\AuthController;
     Route::post('login', AuthController::class . '@login');
 
     Route::post('logout', AuthController::class . '@logout');
+
+    Route::get('/broadcast-test', function () {
+        event(new TestEvent('Hello Vue + Reverb + larvel + cors!'));
+        return 'Event broadcasted!';
+    });
 
     /**
      * protected routes

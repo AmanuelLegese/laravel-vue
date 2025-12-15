@@ -14,7 +14,7 @@ class ItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'string|max:255|unique:items,name',
+            'name' => 'string|required|max:255|unique:items,name',
             'description' => 'string',
             'deleted_at' => 'date',
         ];

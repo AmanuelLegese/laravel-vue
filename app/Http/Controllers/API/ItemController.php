@@ -7,24 +7,23 @@ use App\Http\Requests\ItemRequest;
 use App\Http\Resources\ItemResource;
 use App\Models\Item;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 class ItemController extends Controller
 {
-    public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index()
     {
-        return ItemResource::collection(Item::latest()->paginate(10));
+        $item = Cache::remember('Item',3200,function(){
+            return Item::latest()->paginate(10);
+        });
+        return ItemResource::collection($item);
     }
 
-    public function store(ItemRequest $request): ItemResource|\Illuminate\Http\JsonResponse
+    public function store(ItemRequest $request): ItemResource
     {
-        try {
             $item = Item::create($request->validated());
             return new ItemResource($item);
-        } catch (\Exception $exception) {
-            report($exception);
-            return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
     }
 
     public function show(Item $item): ItemResource
@@ -32,25 +31,15 @@ class ItemController extends Controller
         return ItemResource::make($item);
     }
 
-    public function update(ItemRequest $request, Item $item): ItemResource|\Illuminate\Http\JsonResponse
+    public function update(ItemRequest $request, Item $item): ItemResource
     {
-        try {
             $item->update($request->validated());
             return new ItemResource($item);
-        } catch (\Exception $exception) {
-            report($exception);
-            return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
     }
 
-    public function destroy(Item $item): \Illuminate\Http\JsonResponse
+    public function destroy(Item $item): Response
     {
-        try {
             $item->delete();
-            return response()->json(['message' => 'Deleted successfully'], Response::HTTP_OK);
-        } catch (\Exception $exception) {
-            report($exception);
-            return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+            return response()->noContent();
     }
 }

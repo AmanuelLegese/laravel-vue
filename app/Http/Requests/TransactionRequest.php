@@ -17,7 +17,7 @@ class TransactionRequest extends FormRequest
             'user_id' => 'integer|required|exists:users,id',
             'item_id' => 'integer|required|exists:items,id',
             'quantity' => 'integer|required|min:1',
-            'deleted_at' => 'date',
+            'deleted_at' => 'date|required',
         ];
     }
 }

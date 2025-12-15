@@ -11,20 +11,15 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CategoryController extends Controller
 {
-    public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index()
     {
         return CategoryResource::collection(Category::latest()->paginate(10));
     }
 
-    public function store(CategoryRequest $request): CategoryResource|\Illuminate\Http\JsonResponse
+    public function store(CategoryRequest $request): CategoryResource
     {
-        try {
             $category = Category::create($request->validated());
             return new CategoryResource($category);
-        } catch (\Exception $exception) {
-            report($exception);
-            return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
     }
 
     public function show(Category $category): CategoryResource
@@ -32,25 +27,16 @@ class CategoryController extends Controller
         return CategoryResource::make($category);
     }
 
-    public function update(CategoryRequest $request, Category $category): CategoryResource|\Illuminate\Http\JsonResponse
+    public function update(CategoryRequest $request, Category $category): CategoryResource
     {
-        try {
             $category->update($request->validated());
             return new CategoryResource($category);
-        } catch (\Exception $exception) {
-            report($exception);
-            return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
     }
 
-    public function destroy(Category $category): \Illuminate\Http\JsonResponse
+    public function destroy(Category $category): Response
     {
-        try {
             $category->delete();
-            return response()->json(['message' => 'Deleted successfully'], Response::HTTP_OK);
-        } catch (\Exception $exception) {
-            report($exception);
-            return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+            return response()->noContent();
+        
     }
 }

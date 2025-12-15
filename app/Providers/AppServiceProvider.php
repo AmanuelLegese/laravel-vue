@@ -27,16 +27,10 @@ class AppServiceProvider extends ServiceProvider
          */
         $this->registerPolicies();
 
-        // Force JSON response for all API routes
+        // // Force JSON response for all API routes
         Response::macro('forceJson', function ($data = [], $status = 200) {
             return response()->json($data, $status);
         });
-
-        // You can also force JSON response for every request that is part of an API group
-        if (request()->is('api/*')) {
-            app('request')->headers->set('Accept', 'application/json');
-        }
-
         /**
          * check if it is super admin and allow all permissions
          */

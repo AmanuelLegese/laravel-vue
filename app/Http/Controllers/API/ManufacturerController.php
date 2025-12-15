@@ -11,20 +11,15 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ManufacturerController extends Controller
 {
-    public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index()
     {
         return ManufacturerResource::collection(Manufacturer::latest()->paginate(10));
     }
 
-    public function store(ManufacturerRequest $request): ManufacturerResource|\Illuminate\Http\JsonResponse
+    public function store(ManufacturerRequest $request): ManufacturerResource
     {
-        try {
             $manufacturer = Manufacturer::create($request->validated());
             return new ManufacturerResource($manufacturer);
-        } catch (\Exception $exception) {
-            report($exception);
-            return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
     }
 
     public function show(Manufacturer $manufacturer): ManufacturerResource
@@ -32,25 +27,15 @@ class ManufacturerController extends Controller
         return ManufacturerResource::make($manufacturer);
     }
 
-    public function update(ManufacturerRequest $request, Manufacturer $manufacturer): ManufacturerResource|\Illuminate\Http\JsonResponse
+    public function update(ManufacturerRequest $request, Manufacturer $manufacturer): ManufacturerResource
     {
-        try {
             $manufacturer->update($request->validated());
             return new ManufacturerResource($manufacturer);
-        } catch (\Exception $exception) {
-            report($exception);
-            return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
     }
 
-    public function destroy(Manufacturer $manufacturer): \Illuminate\Http\JsonResponse
+    public function destroy(Manufacturer $manufacturer): Response
     {
-        try {
             $manufacturer->delete();
-            return response()->json(['message' => 'Deleted successfully'], Response::HTTP_OK);
-        } catch (\Exception $exception) {
-            report($exception);
-            return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+            return response()->noContent();
     }
 }

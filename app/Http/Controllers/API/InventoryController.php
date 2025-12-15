@@ -11,20 +11,15 @@ use Symfony\Component\HttpFoundation\Response;
 
 class InventoryController extends Controller
 {
-    public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index()
     {
         return InventoryResource::collection(Inventory::latest()->paginate(10));
     }
 
-    public function store(InventoryRequest $request): InventoryResource|\Illuminate\Http\JsonResponse
+    public function store(InventoryRequest $request): InventoryResource
     {
-        try {
             $inventory = Inventory::create($request->validated());
             return new InventoryResource($inventory);
-        } catch (\Exception $exception) {
-            report($exception);
-            return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
     }
 
     public function show(Inventory $inventory): InventoryResource
@@ -32,25 +27,15 @@ class InventoryController extends Controller
         return InventoryResource::make($inventory);
     }
 
-    public function update(InventoryRequest $request, Inventory $inventory): InventoryResource|\Illuminate\Http\JsonResponse
+    public function update(InventoryRequest $request, Inventory $inventory): InventoryResource
     {
-        try {
             $inventory->update($request->validated());
             return new InventoryResource($inventory);
-        } catch (\Exception $exception) {
-            report($exception);
-            return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
     }
 
-    public function destroy(Inventory $inventory): \Illuminate\Http\JsonResponse
+    public function destroy(Inventory $inventory): Response
     {
-        try {
             $inventory->delete();
-            return response()->json(['message' => 'Deleted successfully'], Response::HTTP_OK);
-        } catch (\Exception $exception) {
-            report($exception);
-            return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+            return response()->noContent();
     }
 }
