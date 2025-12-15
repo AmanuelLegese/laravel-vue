@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Models\Transaction;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 
 class ObserverServiceProvider extends ServiceProvider
@@ -21,6 +21,19 @@ class ObserverServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
-        Transaction::observe(\App\Observers\TransactionObserver::class);
+        
+        $modelsPath = app_path('Models');
+        $models = collect(\Illuminate\Support\Facades\File::allFiles($modelsPath))
+            ->map(function ($file) {
+                $class = 'App\\Models\\' . $file->getBasename('.php');
+                return class_exists($class) && is_subclass_of($class, \Illuminate\Database\Eloquent\Model::class) ? $class : null;
+            })
+            ->filter()
+            ->values()
+            ->toArray();
+        foreach($models as $model){
+            // dd($model);
+        $model::observe(\App\Observers\ModelObserver::class);
+        }
     }
 }

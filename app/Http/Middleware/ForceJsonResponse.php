@@ -16,15 +16,10 @@ class ForceJsonResponse
      */
     public function handle(Request $request, Closure $next)
     {
+        $request->headers->set('Accept', 'application/json');
         $response = $next($request);
-        Response::macro('forceJson', function ($data = [], $status = 200) {
-            return response()->json($data, $status);
-        });
         // Force JSON response for API routes
-        if ($request->is('api/*') && !$response->headers->has('Content-Type')) {
-            return response()->json($response->getData(), $response->getStatusCode());
-        }
-
+ 
         return $response;
     }
 }
