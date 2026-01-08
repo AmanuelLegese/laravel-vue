@@ -14,14 +14,15 @@ class InventoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'item_id' => 'integer|required|exists:items,id',
-            'manufacturer_id' => 'integer|required|exists:manufacturers,id',
-            'unit' => 'string|required|max:50',
-            'unit_price' => 'numeric|required|min:1',
-            'quantity' => 'integer|required|min:1',
-            'remaining_quantity' => 'numeric|required|min:0',
-            'mfd' => 'date||required',
-            'exp' => 'date||required',
+            'item_id' => 'integer',
+            'color_id' => 'integer',
+            'size_id' => 'integer',
+            'status_id' => 'integer',
+            'manufacturer_id' => 'integer',
+            'p_date' => 'date',
+            'ex_date' => 'date',
+            'stock_quantity' => 'integer',
+            'single_price' => 'numeric',
             'deleted_at' => 'date',
         ];
     }

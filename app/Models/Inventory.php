@@ -11,19 +11,13 @@ class Inventory extends Model
     //
     protected $fillable = [
         'item_id',
-        'manufacturer_id',
-        'unit',
-        'unit_price',
-        'quantity',
-        'remaining_quantity',
-        'mfd',
-        'exp',
+        'color_id',
+        'size_id',
+        'status_id',
+        'stock_quantity',
+        'single_price',
     ];
 
-    protected $casts = [
-        'mfd' => 'date',
-        'exp' => 'date',
-    ];
     /**
      * Get the item that owns the inventory.
      */
@@ -33,18 +27,35 @@ class Inventory extends Model
     }
 
     /**
-     * Get the inventory transactions for the inventory.
+     * Get the color that owns the inventory.
      */
-    public function inventoryTransactions()
+    public function color()
+    {
+        return $this->belongsTo(Color::class);
+    }
+
+    /**
+     * Get the size that owns the inventory.
+     */
+    public function size()
+    {
+        return $this->belongsTo(Size::class);
+    }
+
+    /**
+     * Get the status that owns the inventory.
+     */
+    public function status()
+    {
+        return $this->belongsTo(Status::class);
+    }
+
+    /**
+     * Get the transactions for the inventory.
+     */
+    public function transactions()
     {
         return $this->hasMany(Transaction::class);
     }
 
-    /**
-     * Get the supplier that provided the inventory.
-     */
-    public function manufacturer()
-    {
-        return $this->belongsTo(Manufacturer::class);
-    }
 }

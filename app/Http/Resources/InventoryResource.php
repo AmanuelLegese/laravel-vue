@@ -11,12 +11,14 @@ class InventoryResource extends JsonResource
     {
         return [
             'item_id' => $this->item_id,
-            'unit' => $this->unit,
-            'unit_price' => $this->unit_price,
-            'quantity' => $this->quantity,
-            'remaining_quantity' => $this->remaining_quantity,
-            'mfd' => $this->mfd,
-            'exp' => $this->exp,
+            'color_id' => $this->color_id,
+            'size_id' => $this->size_id,
+            'status_id' => $this->status_id,
+            'manufacturer_id' => $this->manufacturer_id,
+            'p_date' => $this->p_date,
+            'ex_date' => $this->ex_date,
+            'stock_quantity' => $this->stock_quantity,
+            'single_price' => $this->single_price,
             'deleted_at' => $this->deleted_at,
         ];
     }

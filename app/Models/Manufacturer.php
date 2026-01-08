@@ -18,4 +18,12 @@ class Manufacturer extends Model
         'created_at'=> 'date',
         'updated_at'=> 'date',
     ];
+
+    /**
+     * Get the inventories for the manufacturer.
+     */
+    public function inventories()
+    {
+        return $this->hasMany(Inventory::class);
+    }
 }

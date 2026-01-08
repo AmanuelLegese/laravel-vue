@@ -3,50 +3,50 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ManufacturerRequest;
-use App\Http\Resources\ManufacturerResource;
-use App\Models\Manufacturer;
+use App\Http\Requests\SizeRequest;
+use App\Http\Resources\SizeResource;
+use App\Models\Size;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ManufacturerController extends Controller
+class SizeController extends Controller
 {
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        return ManufacturerResource::collection(Manufacturer::latest()->paginate(10));
+        return SizeResource::collection(Size::latest()->paginate(10));
     }
 
-    public function store(ManufacturerRequest $request): ManufacturerResource|\Illuminate\Http\JsonResponse
+    public function store(SizeRequest $request): SizeResource|\Illuminate\Http\JsonResponse
     {
         try {
-            $manufacturer = Manufacturer::create($request->validated());
-            return new ManufacturerResource($manufacturer);
+            $size = Size::create($request->validated());
+            return new SizeResource($size);
         } catch (\Exception $exception) {
             report($exception);
             return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function show(Manufacturer $manufacturer): ManufacturerResource
+    public function show(Size $size): SizeResource
     {
-        return ManufacturerResource::make($manufacturer);
+        return SizeResource::make($size);
     }
 
-    public function update(ManufacturerRequest $request, Manufacturer $manufacturer): ManufacturerResource|\Illuminate\Http\JsonResponse
+    public function update(SizeRequest $request, Size $size): SizeResource|\Illuminate\Http\JsonResponse
     {
         try {
-            $manufacturer->update($request->validated());
-            return new ManufacturerResource($manufacturer);
+            $size->update($request->validated());
+            return new SizeResource($size);
         } catch (\Exception $exception) {
             report($exception);
             return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function destroy(Manufacturer $manufacturer): \Illuminate\Http\JsonResponse
+    public function destroy(Size $size): \Illuminate\Http\JsonResponse
     {
         try {
-            $manufacturer->delete();
+            $size->delete();
             return response()->json(['message' => 'Deleted successfully'], Response::HTTP_OK);
         } catch (\Exception $exception) {
             report($exception);
