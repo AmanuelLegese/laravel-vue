@@ -10,7 +10,8 @@ class Transaction extends Model
     use SoftDeletes;
     protected $fillable = [
         'user_id',
-        'item_id',
+        'inventory_id',
+        'price_id',
         'quantity',
     ];
 
@@ -19,13 +20,13 @@ class Transaction extends Model
         'updated_at' => 'date',
         
     ];
-
+    
     /**
-     * Get the item that owns the transaction.
+     * Get the price that owns the transaction.
      */
-    public function item()
+    public function price()
     {
-        return $this->belongsTo(Item::class);
+        return $this->belongsTo(Price::class);
     }
 
     /**
@@ -34,6 +35,14 @@ class Transaction extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the inventory that owns the transaction.
+     */
+    public function inventory()
+    {
+        return $this->belongsTo(Inventory::class);
     }
 
 }

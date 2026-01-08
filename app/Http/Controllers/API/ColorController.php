@@ -3,50 +3,50 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ManufacturerRequest;
-use App\Http\Resources\ManufacturerResource;
-use App\Models\Manufacturer;
+use App\Http\Requests\ColorRequest;
+use App\Http\Resources\ColorResource;
+use App\Models\Color;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ManufacturerController extends Controller
+class ColorController extends Controller
 {
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        return ManufacturerResource::collection(Manufacturer::latest()->paginate(10));
+        return ColorResource::collection(Color::latest()->paginate(10));
     }
 
-    public function store(ManufacturerRequest $request): ManufacturerResource|\Illuminate\Http\JsonResponse
+    public function store(ColorRequest $request): ColorResource|\Illuminate\Http\JsonResponse
     {
         try {
-            $manufacturer = Manufacturer::create($request->validated());
-            return new ManufacturerResource($manufacturer);
+            $color = Color::create($request->validated());
+            return new ColorResource($color);
         } catch (\Exception $exception) {
             report($exception);
             return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function show(Manufacturer $manufacturer): ManufacturerResource
+    public function show(Color $color): ColorResource
     {
-        return ManufacturerResource::make($manufacturer);
+        return ColorResource::make($color);
     }
 
-    public function update(ManufacturerRequest $request, Manufacturer $manufacturer): ManufacturerResource|\Illuminate\Http\JsonResponse
+    public function update(ColorRequest $request, Color $color): ColorResource|\Illuminate\Http\JsonResponse
     {
         try {
-            $manufacturer->update($request->validated());
-            return new ManufacturerResource($manufacturer);
+            $color->update($request->validated());
+            return new ColorResource($color);
         } catch (\Exception $exception) {
             report($exception);
             return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function destroy(Manufacturer $manufacturer): \Illuminate\Http\JsonResponse
+    public function destroy(Color $color): \Illuminate\Http\JsonResponse
     {
         try {
-            $manufacturer->delete();
+            $color->delete();
             return response()->json(['message' => 'Deleted successfully'], Response::HTTP_OK);
         } catch (\Exception $exception) {
             report($exception);

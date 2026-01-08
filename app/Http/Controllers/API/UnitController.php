@@ -3,50 +3,50 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ManufacturerRequest;
-use App\Http\Resources\ManufacturerResource;
-use App\Models\Manufacturer;
+use App\Http\Requests\UnitRequest;
+use App\Http\Resources\UnitResource;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class ManufacturerController extends Controller
+class UnitController extends Controller
 {
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        return ManufacturerResource::collection(Manufacturer::latest()->paginate(10));
+        return UnitResource::collection(Unit::latest()->paginate(10));
     }
 
-    public function store(ManufacturerRequest $request): ManufacturerResource|\Illuminate\Http\JsonResponse
+    public function store(UnitRequest $request): UnitResource|\Illuminate\Http\JsonResponse
     {
         try {
-            $manufacturer = Manufacturer::create($request->validated());
-            return new ManufacturerResource($manufacturer);
+            $unit = Unit::create($request->validated());
+            return new UnitResource($unit);
         } catch (\Exception $exception) {
             report($exception);
             return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function show(Manufacturer $manufacturer): ManufacturerResource
+    public function show(Unit $unit): UnitResource
     {
-        return ManufacturerResource::make($manufacturer);
+        return UnitResource::make($unit);
     }
 
-    public function update(ManufacturerRequest $request, Manufacturer $manufacturer): ManufacturerResource|\Illuminate\Http\JsonResponse
+    public function update(UnitRequest $request, Unit $unit): UnitResource|\Illuminate\Http\JsonResponse
     {
         try {
-            $manufacturer->update($request->validated());
-            return new ManufacturerResource($manufacturer);
+            $unit->update($request->validated());
+            return new UnitResource($unit);
         } catch (\Exception $exception) {
             report($exception);
             return response()->json(['error' => 'There is an error.'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function destroy(Manufacturer $manufacturer): \Illuminate\Http\JsonResponse
+    public function destroy(Unit $unit): \Illuminate\Http\JsonResponse
     {
         try {
-            $manufacturer->delete();
+            $unit->delete();
             return response()->json(['message' => 'Deleted successfully'], Response::HTTP_OK);
         } catch (\Exception $exception) {
             report($exception);

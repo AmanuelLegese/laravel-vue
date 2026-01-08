@@ -11,7 +11,6 @@ class ManufacturerResource extends JsonResource
     {
         return [
             'name' => $this->name,
-            'description' => $this->description,
             'deleted_at' => $this->deleted_at,
         ];
     }

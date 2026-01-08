@@ -14,10 +14,11 @@ class TransactionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => 'integer|required|exists:users,id',
-            'item_id' => 'integer|required|exists:items,id',
-            'quantity' => 'integer|required|min:1',
-            'deleted_at' => 'date|required',
+            'inventory_id' => 'integer',
+            'price_id' => 'integer',
+            'user_id' => 'integer',
+            'quantity' => 'integer',
+            'deleted_at' => 'date',
         ];
     }
 }

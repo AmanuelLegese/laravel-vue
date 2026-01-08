@@ -14,8 +14,7 @@ class ManufacturerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'string|max:255|unique:manufacturers,name|required',
-            'description' => 'string',
+            'name' => 'string|max:255|unique:manufacturers,name',
             'deleted_at' => 'date',
         ];
     }

@@ -21,7 +21,7 @@ use App\Http\Controllers\AuthController;
      */
     Route::middleware('auth:api')->group(function () {
         
-
+        Route::apiResource('/user', App\Http\Controllers\API\UserManagerController::class);
         /**
          * Permission Management
          */
@@ -70,3 +70,13 @@ use App\Http\Controllers\AuthController;
     });
 
 
+
+Route::apiResource('/colors', App\Http\Controllers\API\ColorController::class);
+
+Route::apiResource('/prices', App\Http\Controllers\API\PriceController::class);
+
+Route::apiResource('/sizes', App\Http\Controllers\API\SizeController::class);
+
+Route::apiResource('/statuses', App\Http\Controllers\API\StatusController::class);
+
+Route::apiResource('/units', App\Http\Controllers\API\UnitController::class);
