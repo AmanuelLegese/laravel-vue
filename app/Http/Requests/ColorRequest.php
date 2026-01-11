@@ -14,8 +14,7 @@ class ColorRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'string|max:255|unique:colors,name',
-            'deleted_at' => 'date',
+            'name' => 'string|max:255|unique:colors,name|required',
         ];
     }
 }

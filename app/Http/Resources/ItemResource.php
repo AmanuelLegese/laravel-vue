@@ -9,11 +9,6 @@ class ItemResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        return [
-            'name' => $this->name,
-            'category_id' => $this->category_id,
-            'unit_id' => $this->unit_id,
-            'deleted_at' => $this->deleted_at,
-        ];
+        return parent::toArray($request);
     }
 }

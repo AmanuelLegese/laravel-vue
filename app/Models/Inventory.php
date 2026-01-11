@@ -2,18 +2,22 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Inventory extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasFactory;
     //
     protected $fillable = [
         'item_id',
         'color_id',
         'size_id',
         'status_id',
+        'manufacturer_id',
+        'p_date',
+        'ex_date',
         'stock_quantity',
         'single_price',
     ];
@@ -50,6 +54,13 @@ class Inventory extends Model
         return $this->belongsTo(Status::class);
     }
 
+    /**
+     * Get the manufacturer that owns the inventory
+     */
+    public function manufacturer()
+    {
+        return $this->belongsTo(Manufacturer::class);
+    }
     /**
      * Get the transactions for the inventory.
      */

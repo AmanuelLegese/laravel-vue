@@ -9,9 +9,6 @@ class ManufacturerResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        return [
-            'name' => $this->name,
-            'deleted_at' => $this->deleted_at,
-        ];
+        return parent::toArray($request);
     }
 }
