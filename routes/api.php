@@ -77,7 +77,6 @@ use App\Http\Controllers\AuthController;
 
         Route::apiResource('/units', App\Http\Controllers\API\UnitController::class);
 
-        Route::apiResource('/units', App\Http\Controllers\API\UnitController::class);
 
     });
 
