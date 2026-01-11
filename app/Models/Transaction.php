@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Transaction extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasFactory;
+    
     protected $fillable = [
         'user_id',
         'inventory_id',
@@ -18,9 +20,8 @@ class Transaction extends Model
     protected $casts = [
         'created_at' => 'date',
         'updated_at' => 'date',
-        
     ];
-    
+
     /**
      * Get the price that owns the transaction.
      */

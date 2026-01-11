@@ -14,8 +14,7 @@ class StatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'string|max:255|unique:statuses,name',
-            'deleted_at' => 'date',
+            'name' => 'required|string|max:255|unique:statuses,name',
         ];
     }
 }

@@ -14,10 +14,9 @@ class PriceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'item_id' => 'integer',
-            'amount' => 'numeric',
+            'item_id' => 'required|integer|exists:items,id',
+            'amount' => 'required|numeric',
             'is_active' => 'integer',
-            'deleted_at' => 'date',
         ];
     }
 }

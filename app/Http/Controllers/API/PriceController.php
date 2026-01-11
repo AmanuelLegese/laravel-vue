@@ -7,6 +7,7 @@ use App\Http\Requests\PriceRequest;
 use App\Http\Resources\PriceResource;
 use App\Models\Price;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
 
 class PriceController extends Controller
@@ -19,7 +20,14 @@ class PriceController extends Controller
     public function store(PriceRequest $request): PriceResource|\Illuminate\Http\JsonResponse
     {
         try {
-            $price = Price::create($request->validated());
+            $price = DB::transaction(function () use ($request) {
+                        // Deactivate existing prices for the item(s)
+                        Price::whereIn('item_id', [$request->item_id])
+                            ->update(['is_active' => 0]);
+
+                        // Create the new active price
+                        return Price::create($request->validated());
+                    });
             return new PriceResource($price);
         } catch (\Exception $exception) {
             report($exception);

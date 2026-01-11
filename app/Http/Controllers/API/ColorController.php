@@ -7,11 +7,12 @@ use App\Http\Requests\ColorRequest;
 use App\Http\Resources\ColorResource;
 use App\Models\Color;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Symfony\Component\HttpFoundation\Response;
 
 class ColorController extends Controller
 {
-    public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+    public function index(Request $request): JsonResource
     {
         return ColorResource::collection(Color::latest()->paginate(10));
     }
