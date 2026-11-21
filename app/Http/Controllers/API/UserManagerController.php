@@ -11,7 +11,7 @@ class UserManagerController extends Controller
     //
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = User::query()->with('roles');
 
         // Search
         if ($request->filled('q')) {
@@ -29,6 +29,6 @@ class UserManagerController extends Controller
 
         $query->orderBy($sort, $order);
 
-        return $query->paginate(10)->withQueryString();
+        return $query->paginate($this->perPage())->withQueryString();
     }
 }

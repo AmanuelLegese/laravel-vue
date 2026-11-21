@@ -216,4 +216,18 @@ class PharmacyInventoryTest extends TestCase
         $this->assertTrue($user->fresh()->hasRole('pharmacist'));
         $this->artisan('pharmacy:role nobody@example.com')->assertFailed();
     }
+
+    public function test_lists_include_related_names_and_invoices(): void
+    {
+        $item = $this->addProduct();
+        $this->batch($item, 'B1', now()->addYear()->toDateString(), 5);
+        $this->postJson('/api/transactions', ['item_id' => $item, 'quantity' => 2])->assertCreated();
+
+        $items = $this->getJson('/api/items')->assertJsonPath('data.0.category.name', 'Antibiotic');
+        $this->assertEquals(5.5, $items->json('data.0.active_price.amount'));
+        $this->getJson('/api/inventories')->assertJsonPath('data.0.item.name', 'Amoxicillin')
+            ->assertJsonPath('data.0.status.name', 'Available');
+        $this->getJson('/api/invoices')->assertJsonPath('data.0.transactions.0.inventory.item.name', 'Amoxicillin');
+        $this->getJson('/api/categories?per_page=1')->assertJsonPath('meta.per_page', 1);
+    }
 }

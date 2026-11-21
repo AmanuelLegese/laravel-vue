@@ -7,17 +7,20 @@ use App\Http\Requests\ItemRequest;
 use App\Http\Resources\ItemResource;
 use App\Models\Item;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 class ItemController extends Controller
 {
     public function index()
     {
-        $item = Cache::remember('Item',3200,function(){
-            return Item::latest()->paginate(10);
-        });
-        return ItemResource::collection($item);
+        $items = Item::with(['category:id,name', 'unit:id,name', 'activePrice'])
+            ->when(request('q'), fn ($q, $term) => $q->where(fn ($w) => $w
+                ->where('name', 'like', "%{$term}%")
+                ->orWhere('generic_name', 'like', "%{$term}%")))
+            ->latest()
+            ->paginate($this->perPage());
+
+        return ItemResource::collection($items);
     }
 
     public function store(ItemRequest $request): ItemResource

@@ -13,7 +13,7 @@ class UnitController extends Controller
 {
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        return UnitResource::collection(Unit::latest()->paginate(10));
+        return UnitResource::collection(Unit::latest()->paginate($this->perPage()));
     }
 
     public function store(UnitRequest $request): UnitResource|\Illuminate\Http\JsonResponse

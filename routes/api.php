@@ -43,6 +43,7 @@ use App\Http\Controllers\AuthController;
             Route::get('/reports/expiring', [App\Http\Controllers\API\ReportController::class, 'expiring']);
             Route::get('/stock-movements', [App\Http\Controllers\API\StockController::class, 'movements']);
 
+            Route::apiResource('/invoices', App\Http\Controllers\API\InvoiceController::class)->only(['index', 'show']);
             Route::apiResource('/transactions', App\Http\Controllers\API\TransactionController::class)
                 ->only(['index', 'show', 'store']);
         });

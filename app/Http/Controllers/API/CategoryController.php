@@ -13,7 +13,7 @@ class CategoryController extends Controller
 {
     public function index()
     {
-        return CategoryResource::collection(Category::latest()->paginate(10));
+        return CategoryResource::collection(Category::latest()->paginate($this->perPage()));
     }
 
     public function store(CategoryRequest $request): CategoryResource

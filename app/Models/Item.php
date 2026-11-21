@@ -68,4 +68,12 @@ class Item extends Model
     {
         return $this->hasMany(Price::class);
     }
+
+    /**
+     * the current selling price
+     */
+    public function activePrice()
+    {
+        return $this->hasOne(Price::class)->where('is_active', 1)->latestOfMany();
+    }
 }

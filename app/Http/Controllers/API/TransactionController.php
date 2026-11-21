@@ -23,7 +23,9 @@ class TransactionController extends Controller
 {
     public function index(Request $request): JsonResource
     {
-        return TransactionResource::collection(Transaction::latest()->paginate(10));
+        return TransactionResource::collection(
+            Transaction::with(['inventory.item:id,name,strength', 'invoice:id,invoice_number', 'user:id,name'])->latest()->paginate($this->perPage())
+        );
     }
 
     /**

@@ -14,7 +14,7 @@ class PriceController extends Controller
 {
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        return PriceResource::collection(Price::latest()->paginate(10));
+        return PriceResource::collection(Price::with('item:id,name,strength')->when(request('item_id'), fn ($q, $id) => $q->where('item_id', $id))->latest()->paginate($this->perPage()));
     }
 
     public function store(PriceRequest $request): PriceResource|\Illuminate\Http\JsonResponse

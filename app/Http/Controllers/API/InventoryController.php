@@ -15,7 +15,15 @@ class InventoryController extends Controller
 {
     public function index()
     {
-        return InventoryResource::collection(Inventory::latest()->paginate(10));
+        $inventories = Inventory::with(['item:id,name,strength,dosage_form', 'status:id,name', 'manufacturer:id,name'])
+            ->when(request('item_id'), fn ($q, $id) => $q->where('item_id', $id))
+            ->when(request('q'), fn ($q, $term) => $q->where(fn ($w) => $w
+                ->where('batch_number', 'like', "%{$term}%")
+                ->orWhereHas('item', fn ($i) => $i->where('name', 'like', "%{$term}%"))))
+            ->latest()
+            ->paginate($this->perPage());
+
+        return InventoryResource::collection($inventories);
     }
 
     /**

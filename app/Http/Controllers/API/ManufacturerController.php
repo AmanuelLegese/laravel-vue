@@ -13,7 +13,7 @@ class ManufacturerController extends Controller
 {
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        return ManufacturerResource::collection(Manufacturer::latest()->paginate(10));
+        return ManufacturerResource::collection(Manufacturer::latest()->paginate($this->perPage()));
     }
 
     public function store(ManufacturerRequest $request): ManufacturerResource|\Illuminate\Http\JsonResponse

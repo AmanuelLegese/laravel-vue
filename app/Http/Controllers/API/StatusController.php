@@ -13,7 +13,7 @@ class StatusController extends Controller
 {
     public function index(): \Illuminate\Http\Resources\Json\AnonymousResourceCollection
     {
-        return StatusResource::collection(Status::latest()->paginate(10));
+        return StatusResource::collection(Status::latest()->paginate($this->perPage()));
     }
 
     public function store(StatusRequest $request): StatusResource|\Illuminate\Http\JsonResponse
