@@ -4,10 +4,14 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TransactionRequest;
+use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\TransactionResource;
 use App\Models\Inventory;
+use App\Models\Invoice;
 use App\Models\Item;
+use App\Models\StockMovement;
 use App\Models\Transaction;
+use App\Services\StockService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
@@ -23,12 +27,13 @@ class TransactionController extends Controller
     }
 
     /**
-     * Sell stock. Batches that are expired or empty are skipped; with item_id
-     * the earliest-expiring batches are used first (FEFO).
+     * Sell stock and return an invoice. Batches that are expired, empty or
+     * not sellable (status) are skipped; with item_id the earliest-expiring
+     * batches are used first (FEFO). One transaction line is created per batch.
      */
-    public function store(TransactionRequest $request): JsonResource
+    public function store(TransactionRequest $request, StockService $stock): InvoiceResource
     {
-        $transactions = DB::transaction(function () use ($request) {
+        $invoice = DB::transaction(function () use ($request, $stock) {
             $item = $request->inventory_id
                 ? Inventory::findOrFail($request->inventory_id)->item
                 : Item::findOrFail($request->item_id);
@@ -38,39 +43,58 @@ class TransactionController extends Controller
                 ->when($request->inventory_id, fn ($q) => $q->where('id', $request->inventory_id))
                 ->where('stock_quantity', '>', 0)
                 ->whereDate('ex_date', '>=', today())
+                ->whereHas('status', fn ($q) => $q->where('is_sellable', true))
                 ->orderBy('ex_date')
                 ->lockForUpdate()
                 ->get();
 
             if ($batches->sum('stock_quantity') < $request->quantity) {
                 throw ValidationException::withMessages([
-                    'quantity' => 'Not enough unexpired stock available.',
+                    'quantity' => 'Not enough sellable, unexpired stock available.',
                 ]);
             }
 
-            $priceId = $item->price()->where('is_active', 1)->value('id');
+            $price = $item->price()->where('is_active', 1)->first();
+
+            $invoice = Invoice::create([
+                'user_id' => Auth::id(),
+                'patient_name' => $request->patient_name,
+                'prescriber' => $request->prescriber,
+                'prescription_number' => $request->prescription_number,
+            ]);
+            $invoice->update(['invoice_number' => sprintf('INV-%06d', $invoice->id)]);
+
             $remaining = $request->quantity;
-            $created = [];
+            $total = 0;
 
             foreach ($batches as $batch) {
                 if ($remaining <= 0) {
                     break;
                 }
                 $take = min($remaining, $batch->stock_quantity);
-                $batch->decrement('stock_quantity', $take);
-                $created[] = Transaction::create([
+                $lineTotal = round($price->amount * $take, 2);
+
+                $line = Transaction::create([
+                    'invoice_id' => $invoice->id,
                     'inventory_id' => $batch->id,
-                    'price_id' => $priceId,
+                    'price_id' => $price->id,
                     'user_id' => Auth::id(),
                     'quantity' => $take,
+                    'unit_price' => $price->amount,
+                    'line_total' => $lineTotal,
                 ]);
+                $stock->move($batch, StockMovement::SALE, -$take, $invoice->invoice_number, $line->id);
+
+                $total += $lineTotal;
                 $remaining -= $take;
             }
 
-            return collect($created);
+            $invoice->update(['total' => $total]);
+
+            return $invoice->load('transactions');
         });
 
-        return TransactionResource::collection($transactions);
+        return InvoiceResource::make($invoice);
     }
 
     public function show(Transaction $transaction): TransactionResource
@@ -78,15 +102,22 @@ class TransactionController extends Controller
         return TransactionResource::make($transaction);
     }
 
-    public function update(TransactionRequest $request, Transaction $transaction): TransactionResource
+    /**
+     * Void a sale line: the quantity goes back to its batch and the invoice
+     * total is reduced. Sales are never edited in place.
+     */
+    public function destroy(Transaction $transaction, StockService $stock): Response
     {
-            $transaction->update($request->validated());
-            return new TransactionResource($transaction);
-    }
+        DB::transaction(function () use ($transaction, $stock) {
+            $stock->move($transaction->inventory, StockMovement::VOID, $transaction->quantity, 'Sale voided', $transaction->id);
 
-    public function destroy(Transaction $transaction): Response
-    {
+            if ($transaction->invoice) {
+                $transaction->invoice->decrement('total', $transaction->line_total ?? 0);
+            }
+
             $transaction->delete();
-            return response()->noContent();
+        });
+
+        return response()->noContent();
     }
 }

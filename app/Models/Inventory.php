@@ -18,7 +18,9 @@ class Inventory extends Model
         'p_date',
         'ex_date',
         'stock_quantity',
-        'single_price',
+        'cost_price',
+        'supplier',
+        'purchase_order',
     ];
 
     /**
@@ -52,4 +54,8 @@ class Inventory extends Model
         return $this->hasMany(Transaction::class);
     }
 
+    public function movements()
+    {
+        return $this->hasMany(StockMovement::class);
+    }
 }

@@ -18,68 +18,57 @@ use App\Http\Controllers\AuthController;
 
     /**
      * protected routes
+     *
+     * staff (admin or pharmacist): read catalog and stock, sell, reports
+     * admin only: users, roles, permissions, catalog/price/stock changes, adjustments, voids
      */
     Route::middleware('auth:api')->group(function () {
-        
-        Route::apiResource('/user', App\Http\Controllers\API\UserManagerController::class);
-        /**
-         * Permission Management
-         */
-        Route::get('/permission', [App\Http\Controllers\API\ManagePermission::class, 'getPermission']);
-        Route::post('/grant', [App\Http\Controllers\API\ManagePermission::class, 'grantPermission']);
-        Route::post('/revoke', [App\Http\Controllers\API\ManagePermission::class, 'revokePermission']);
-        Route::post('/massgrant', [App\Http\Controllers\API\ManagePermission::class, 'massgrantPermission']);
-        Route::post('/massrevoke', [App\Http\Controllers\API\ManagePermission::class, 'massrevokePermission']);
 
-        /**
-         * Role Management
-         */
-        Route::get('/roles', App\Http\Controllers\API\ManageRole::class);
-        Route::post('/roles', [App\Http\Controllers\API\ManageRole::class, 'createRole']);
-        Route::delete('/roles', [App\Http\Controllers\API\ManageRole::class, 'deleteRole']);
-        Route::post('/assign-permissions-roles', [App\Http\Controllers\API\ManageRole::class, 'assignPermissionsToRole']);
-        Route::post('/revoke-permissions-roles', [App\Http\Controllers\API\ManageRole::class, 'revokePermissionsFromRole']);
-        Route::post('/assign-user-role', [App\Http\Controllers\API\ManageRole::class, 'assignUserToRole']);
-        Route::post('/revoke-user-role', [App\Http\Controllers\API\ManageRole::class, 'revokeUserFromRole']);
-        
-        /**
-         * items
-         */
-        Route::apiResource('/items', App\Http\Controllers\API\ItemController::class);
-        
-        /**
-         * categories
-         */
-        Route::apiResource('/categories', App\Http\Controllers\API\CategoryController::class);
+        $catalog = [
+            'items' => App\Http\Controllers\API\ItemController::class,
+            'categories' => App\Http\Controllers\API\CategoryController::class,
+            'manufacturers' => App\Http\Controllers\API\ManufacturerController::class,
+            'inventories' => App\Http\Controllers\API\InventoryController::class,
+            'prices' => App\Http\Controllers\API\PriceController::class,
+            'statuses' => App\Http\Controllers\API\StatusController::class,
+            'units' => App\Http\Controllers\API\UnitController::class,
+        ];
 
-        /**
-         * manufacturers
-         */
-        Route::apiResource('/manufacturers', App\Http\Controllers\API\ManufacturerController::class);
+        Route::middleware('role:admin|pharmacist')->group(function () use ($catalog) {
+            foreach ($catalog as $name => $controller) {
+                Route::apiResource("/$name", $controller)->only(['index', 'show']);
+            }
 
-        /**
-         * inventories
-         */
-        Route::apiResource('/inventories', App\Http\Controllers\API\InventoryController::class);
+            Route::get('/reports/low-stock', [App\Http\Controllers\API\ReportController::class, 'lowStock']);
+            Route::get('/reports/expiring', [App\Http\Controllers\API\ReportController::class, 'expiring']);
+            Route::get('/stock-movements', [App\Http\Controllers\API\StockController::class, 'movements']);
 
-        /**
-         * reports
-         */
-        Route::get('/reports/low-stock', [App\Http\Controllers\API\ReportController::class, 'lowStock']);
-        Route::get('/reports/expiring', [App\Http\Controllers\API\ReportController::class, 'expiring']);
+            Route::apiResource('/transactions', App\Http\Controllers\API\TransactionController::class)
+                ->only(['index', 'show', 'store']);
+        });
 
-        /**
-         * transactions
-         */
-        Route::apiResource('/transactions', App\Http\Controllers\API\TransactionController::class);
+        Route::middleware('role:admin')->group(function () use ($catalog) {
+            foreach ($catalog as $name => $controller) {
+                Route::apiResource("/$name", $controller)->except(['index', 'show']);
+            }
 
-        Route::apiResource('/prices', App\Http\Controllers\API\PriceController::class);
+            Route::post('/stock-adjustments', [App\Http\Controllers\API\StockController::class, 'adjust']);
+            Route::delete('/transactions/{transaction}', [App\Http\Controllers\API\TransactionController::class, 'destroy']);
 
-        Route::apiResource('/statuses', App\Http\Controllers\API\StatusController::class);
+            Route::apiResource('/user', App\Http\Controllers\API\UserManagerController::class);
 
-        Route::apiResource('/units', App\Http\Controllers\API\UnitController::class);
+            Route::get('/permission', [App\Http\Controllers\API\ManagePermission::class, 'getPermission']);
+            Route::post('/grant', [App\Http\Controllers\API\ManagePermission::class, 'grantPermission']);
+            Route::post('/revoke', [App\Http\Controllers\API\ManagePermission::class, 'revokePermission']);
+            Route::post('/massgrant', [App\Http\Controllers\API\ManagePermission::class, 'massgrantPermission']);
+            Route::post('/massrevoke', [App\Http\Controllers\API\ManagePermission::class, 'massrevokePermission']);
 
-
+            Route::get('/roles', App\Http\Controllers\API\ManageRole::class);
+            Route::post('/roles', [App\Http\Controllers\API\ManageRole::class, 'createRole']);
+            Route::delete('/roles', [App\Http\Controllers\API\ManageRole::class, 'deleteRole']);
+            Route::post('/assign-permissions-roles', [App\Http\Controllers\API\ManageRole::class, 'assignPermissionsToRole']);
+            Route::post('/revoke-permissions-roles', [App\Http\Controllers\API\ManageRole::class, 'revokePermissionsFromRole']);
+            Route::post('/assign-user-role', [App\Http\Controllers\API\ManageRole::class, 'assignUserToRole']);
+            Route::post('/revoke-user-role', [App\Http\Controllers\API\ManageRole::class, 'revokeUserFromRole']);
+        });
     });
-
-

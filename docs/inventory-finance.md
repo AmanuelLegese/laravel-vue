@@ -166,9 +166,27 @@ Use `barryvdh/laravel-dompdf` (or similar) to render a Blade view with: business
 
 ---
 
-## 6. Simple pharmacy changes (implemented)
+## 6. Pharmacy system (implemented)
 
-- **Items** now have `generic_name`, `strength`, `dosage_form` and `reorder_level`.
-- **Inventories** are batches: `batch_number` added; `color_id` and `size_id` removed (migration `2026_11_21_000001_make_inventory_pharmacy`). The `/colors` and `/sizes` routes are gone.
-- **Selling** (`POST /transactions`) takes `quantity` plus either `inventory_id` (a specific batch) or `item_id` (earliest-expiring batches first). Expired and empty batches are skipped. If unexpired stock is short, it returns a 422 validation error. One transaction row is created per batch used, so the response is a list.
-- **Reports:** `GET /reports/low-stock` (unexpired stock at or below `reorder_level`) and `GET /reports/expiring?days=90` (batches with stock that are expired or expire within N days).
+This section describes the code as it is now and supersedes the gaps in sections 3 and 4 that it closes.
+
+**Products and batches**
+- `items` have `generic_name`, `strength`, `dosage_form`, `reorder_level`, `is_prescription_only`, `is_controlled`.
+- `inventories` are batches: unique `batch_number` per item, `cost_price` (what we paid; the selling price lives in `prices`), `supplier`, `purchase_order`, `ex_date` (must be in the future). `color_id`, `size_id` and the colors/sizes tables are removed. `manufacturer_id` is now a real foreign key.
+- `statuses.is_sellable` (default true): batches with a non-sellable status (for example quarantine) are never sold.
+
+**Stock is only changed through `StockService`**, and every change is a row in `stock_movements` (`opening`, `receipt`, `sale`, `void`, `return`, `damaged`, `expired`, `lost`, `correction`) with the signed quantity, balance after, user and reason. `PUT /inventories/{id}` ignores `stock_quantity`.
+
+**Selling** (`POST /transactions`): `quantity` plus `item_id` (earliest-expiring batches first) or `inventory_id`. Skips expired, empty and non-sellable batches; 422 if short. Creates an `invoices` row (`INV-000123`, total, optional patient/prescriber/prescription number) with one `transactions` line per batch (`unit_price`, `line_total`). Prescription-only and controlled items require `patient_name` and `prescription_number`. Sales cannot be edited. `DELETE /transactions/{id}` voids a line: stock returns to its batch and the invoice total drops.
+
+**Adjustments** (`POST /stock-adjustments`, reason required): `damaged`, `expired`, `lost` subtract; `return` adds; `correction` takes a signed quantity. Stock cannot go below zero.
+
+**Reports:** `GET /reports/low-stock`, `GET /reports/expiring?days=90`, `GET /stock-movements?inventory_id=&item_id=&type=&from=&to=`.
+
+**Roles**
+- `pharmacist`: read catalog and stock, sell, run reports.
+- `admin`: everything, including catalog/price/stock changes, adjustments, voids, users, roles and permissions.
+- Users with neither role get 403 everywhere in the protected API.
+- Give a user a role with `php artisan pharmacy:role user@example.com admin` (or `pharmacist`). Run this for existing users after deploying, or nobody can use the API.
+
+Not done: multi-item invoices in one request, supplier/purchase-order tables, returns linked to a specific sale, and a stock-take workflow.

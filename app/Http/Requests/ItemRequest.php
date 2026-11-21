@@ -21,6 +21,8 @@ class ItemRequest extends FormRequest
             'strength' => 'nullable|string|max:50',
             'dosage_form' => 'nullable|string|max:50',
             'reorder_level' => 'required|integer|min:0',
+            'is_prescription_only' => 'sometimes|boolean',
+            'is_controlled' => 'sometimes|boolean',
         ];
     }
 }

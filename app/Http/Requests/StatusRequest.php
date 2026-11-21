@@ -15,6 +15,7 @@ class StatusRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255|unique:statuses,name',
+            'is_sellable' => 'sometimes|boolean',
         ];
     }
 }

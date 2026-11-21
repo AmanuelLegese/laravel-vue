@@ -18,9 +18,13 @@ class Item extends Model
         'strength',
         'dosage_form',
         'reorder_level',
+        'is_prescription_only',
+        'is_controlled',
     ];
 
     protected $casts = [
+        'is_prescription_only' => 'boolean',
+        'is_controlled' => 'boolean',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];

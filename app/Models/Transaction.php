@@ -15,6 +15,9 @@ class Transaction extends Model
         'inventory_id',
         'price_id',
         'quantity',
+        'invoice_id',
+        'unit_price',
+        'line_total',
     ];
 
     protected $casts = [
@@ -46,4 +49,8 @@ class Transaction extends Model
         return $this->belongsTo(Inventory::class);
     }
 
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class);
+    }
 }

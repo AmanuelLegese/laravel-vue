@@ -12,7 +12,10 @@ class Status extends Model
     //
     protected $fillable = [
         'name',
+        'is_sellable',
     ];
+
+    protected $casts = ['is_sellable' => 'boolean'];
 
     /**
      * Get the inventory records associated with the status.
