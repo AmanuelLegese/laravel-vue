@@ -21,7 +21,7 @@ class ManageRole extends Controller
     public function __invoke()
     {
         //
-        $role = Role::with('permissions')->paginate(10);
+        $role = Role::with('permissions')->paginate($this->perPage());
         return CreateRoleResource::collection($role);
     }
 
