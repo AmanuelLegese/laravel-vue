@@ -13,7 +13,11 @@ class Item extends Model
     protected $fillable = [
         'name',
         'category_id',
-        'unit_id'
+        'unit_id',
+        'generic_name',
+        'strength',
+        'dosage_form',
+        'reorder_level',
     ];
 
     protected $casts = [

@@ -3,8 +3,8 @@
 namespace App\Http\Requests;
 
 use App\Models\Inventory;
+use App\Models\Item;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
 class TransactionRequest extends FormRequest
 {
@@ -13,38 +13,32 @@ class TransactionRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Sell either a specific batch (inventory_id) or an item (item_id).
+     * With item_id, stock is taken from the earliest-expiring batches first.
+     */
     public function rules(): array
     {
         return [
-            'inventory_id' => ['required','integer','exists:inventories,id'],
-            'quantity' => 'required|numeric|min:1',
-            'price_id' => 'required|integer|exists:prices,id',
-            'user_id' => 'required|integer|exists:users,id'
+            'inventory_id' => ['required_without:item_id', 'nullable', 'integer', 'exists:inventories,id'],
+            'item_id' => ['required_without:inventory_id', 'nullable', 'integer', 'exists:items,id'],
+            'quantity' => 'required|integer|min:1',
         ];
-    }
-
-    public function prepareForValidation()
-    {
-        $inventory = Inventory::find($this->input('inventory_id'));
-        $user_id = Auth::id();
-        return $this->merge([
-            'price_id' => $inventory->item->price->firstWhere('is_active', 1)->id,
-            'user_id' => $user_id
-
-        ]);
     }
 
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
-        $inventory = Inventory::find($this->input('inventory_id'));
-        $hasActivePrice = $inventory?->item?->price?->contains(fn ($price) => $price->is_active == 1);
+            if ($validator->errors()->isNotEmpty()) {
+                return;
+            }
 
-            if (! $hasActivePrice) {
-                $validator->errors()->add(
-                    'inventory_id',
-                    'The selected inventory does not have an active price.'
-                );
+            $item = $this->inventory_id
+                ? Inventory::find($this->inventory_id)?->item
+                : Item::find($this->item_id);
+
+            if (! $item?->price()->where('is_active', 1)->exists()) {
+                $validator->errors()->add('item_id', 'The selected item does not have an active price.');
             }
         });
     }

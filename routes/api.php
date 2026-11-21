@@ -63,15 +63,17 @@ use App\Http\Controllers\AuthController;
         Route::apiResource('/inventories', App\Http\Controllers\API\InventoryController::class);
 
         /**
+         * reports
+         */
+        Route::get('/reports/low-stock', [App\Http\Controllers\API\ReportController::class, 'lowStock']);
+        Route::get('/reports/expiring', [App\Http\Controllers\API\ReportController::class, 'expiring']);
+
+        /**
          * transactions
          */
         Route::apiResource('/transactions', App\Http\Controllers\API\TransactionController::class);
 
-        Route::apiResource('/colors', App\Http\Controllers\API\ColorController::class);
-
         Route::apiResource('/prices', App\Http\Controllers\API\PriceController::class);
-
-        Route::apiResource('/sizes', App\Http\Controllers\API\SizeController::class);
 
         Route::apiResource('/statuses', App\Http\Controllers\API\StatusController::class);
 

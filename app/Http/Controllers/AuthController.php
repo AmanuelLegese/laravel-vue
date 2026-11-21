@@ -70,8 +70,7 @@ class AuthController extends Controller
         }
 
         // create token
-        $token = $user->createToken('AppToken');
-        dd($token->accessToken);
+        $token = $user->createToken('AppToken')->accessToken;
         SendWelcomeEmailJob::dispatch($user);
         return response()->json([
             'message' => 'Logged in successfully',

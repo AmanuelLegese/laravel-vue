@@ -12,10 +12,9 @@ class Inventory extends Model
     //
     protected $fillable = [
         'item_id',
-        'color_id',
-        'size_id',
         'status_id',
         'manufacturer_id',
+        'batch_number',
         'p_date',
         'ex_date',
         'stock_quantity',
@@ -28,22 +27,6 @@ class Inventory extends Model
     public function item()
     {
         return $this->belongsTo(Item::class);
-    }
-
-    /**
-     * Get the color that owns the inventory.
-     */
-    public function color()
-    {
-        return $this->belongsTo(Color::class);
-    }
-
-    /**
-     * Get the size that owns the inventory.
-     */
-    public function size()
-    {
-        return $this->belongsTo(Size::class);
     }
 
     /**

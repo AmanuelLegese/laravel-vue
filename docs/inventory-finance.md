@@ -163,3 +163,12 @@ Use `barryvdh/laravel-dompdf` (or similar) to render a Blade view with: business
 4. Build invoices (section 5): migrations, models, `InvoiceRequest`, `InvoiceController`, tests, then PDF.
 5. Add `lot_number`, `reorder_level` and an expiring-soon query/endpoint.
 6. Add reports: stock on hand, value on hand (`stock_quantity × single_price`), sales by period, expiring stock, low stock.
+
+---
+
+## 6. Simple pharmacy changes (implemented)
+
+- **Items** now have `generic_name`, `strength`, `dosage_form` and `reorder_level`.
+- **Inventories** are batches: `batch_number` added; `color_id` and `size_id` removed (migration `2026_11_21_000001_make_inventory_pharmacy`). The `/colors` and `/sizes` routes are gone.
+- **Selling** (`POST /transactions`) takes `quantity` plus either `inventory_id` (a specific batch) or `item_id` (earliest-expiring batches first). Expired and empty batches are skipped. If unexpired stock is short, it returns a 422 validation error. One transaction row is created per batch used, so the response is a list.
+- **Reports:** `GET /reports/low-stock` (unexpired stock at or below `reorder_level`) and `GET /reports/expiring?days=90` (batches with stock that are expired or expire within N days).

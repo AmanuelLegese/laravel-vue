@@ -16,14 +16,13 @@ class InventoryRequest extends FormRequest
     {
         return [
             'item_id' => 'required|integer|exists:items,id',
-            'color_id' => 'required|integer|exists:colors,id',
-            'size_id' => 'required|integer|exists:sizes,id',
+            'batch_number' => 'required|string|max:100',
             'status_id' => 'required|integer|exists:statuses,id',
             'manufacturer_id' => 'required|integer|exists:manufacturers,id',
             'p_date' => 'required|date|date_format:Y-m-d',
             'ex_date' => ['required','date','date_format:Y-m-d','after:p_date','after:'.Carbon::today()->addMonths(6)->toDateString(),],
-            'stock_quantity' => 'required|integer',
-            'single_price' => 'required|numeric',
+            'stock_quantity' => 'required|integer|min:0',
+            'single_price' => 'required|numeric|min:0',
         ];
     }
 }
